@@ -3,14 +3,11 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from DiscordChatExporterPy.chat_exporter import chat_exporter
+import sql_methods
 
 db_path = 'channels.db'
 conn = sqlite3.connect(db_path)
 c = conn.cursor()
-
-def removeChannel(id:int):
-    with conn:
-        c.execute(f"DELETE from channels WHERE id = ?", (id,))
 
 
 
@@ -31,7 +28,7 @@ class Archive(commands.Cog):
             file = await chat_exporter.quick_export(channel)
             await interaction.response.send_message(f'Channel {channel} archived', file=file, ephemeral=True)
             await channel.delete()
-            removeChannel(channel.id)
+            sql_methods.removeChannel(channel.id)
         else:
             interaction.response.send_message("You do not have permission to archive this channel", ephemeral=True)
             return

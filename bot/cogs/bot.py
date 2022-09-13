@@ -3,10 +3,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-db_path = 'channels.db'
-conn = sqlite3.connect(db_path)
-c = conn.cursor()
-
 
 class Bot(commands.Cog):
 
