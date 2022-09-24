@@ -21,7 +21,12 @@ class addChannel(commands.Cog):
     async def createChannel(self, interaction: discord.Interaction, name:str) -> None:
         if (sql_methods.getChannel(name) == None):
             guild = interaction.guild
-            channel = await guild.create_text_channel(f'{name}')
+            if (discord.utils.get(guild.categories, name = 'Channels') != None):
+                category = discord.utils.get(guild.categories, name = 'Channels')
+            else:
+                category = await guild.create_category('Channels')
+            category.set_permissions(guild.default_role, view_channel=False)
+            channel = await guild.create_text_channel(f'{name}', category=category)
             sql_methods.insertChannel(name, channel.id, 0)
             await channel.set_permissions(guild.default_role, view_channel=False)
             await interaction.response.send_message(f'Channel {channel} created', ephemeral=True)

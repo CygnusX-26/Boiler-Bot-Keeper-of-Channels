@@ -42,6 +42,7 @@ class Select(ui.Select):
                 message += f'You already have access to {channel.name}\n'
                 continue
             await channel.set_permissions(interaction.user, view_channel=True)
+            await channel.edit(category=None)
             message += f'Channel {channel.name} updated\n'
             sql_methods.updateChannel(i, channel.id, 1)
         await interaction.response.send_message(message, ephemeral=True)

@@ -47,6 +47,7 @@ class Select(ui.Select):
                 message += f"You don't have access to {channel.name}\n"
                 continue
             await channel.set_permissions(interaction.user, view_channel=False)
+            await channel.edit(category=discord.utils.get(guild.categories, name="Channels"))
             message += f'Channel {channel.name} updated\n'
             sql_methods.updateChannel(i, channel.id, -1)
         await interaction.response.send_message(message, ephemeral=True)
