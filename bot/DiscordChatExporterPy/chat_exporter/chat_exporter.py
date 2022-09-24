@@ -21,6 +21,8 @@ async def quick_export(
             pytz_timezone="UTC",
             military_time=False,
             bot=bot,
+            fancy_times=False,
+            support_dev=False,
             ).export()
         ).html
 
