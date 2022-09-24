@@ -20,17 +20,25 @@ class Archive(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name= 'archive', description = 'archives a channel')
-    async def archive(self, interaction: discord.Interaction, channel:discord.TextChannel) -> None:
+    async def archive(self, interaction: discord.Interaction, channel:str) -> None:
+        guild = interaction.guild
+        channel: discord.TextChannel = discord.utils.get(guild.channels, name = channel)
+        if (channel == None):
+            await interaction.response.send_message("Channel does not exist", ephemeral=True)
+            return
         if (channel.id == interaction.channel.id):
             await interaction.response.send_message("You might want to archive this from another channel!", ephemeral=True)
             return
-        if (channel.permissions_for(interaction.user).manage_channels == True ):
+        
+        if (channel.permissions_for(interaction.user).manage_channels == True or sql_methods.getChannel(channel.name)[3] == interaction.user.id):
             file = await chat_exporter.quick_export(channel)
             await interaction.response.send_message(f'Channel {channel} archived', file=file, ephemeral=True)
             await channel.delete()
+            owner = sql_methods.getOwner(channel.id)
             sql_methods.removeChannel(channel.id)
+            sql_methods.updateUser(owner, -1)
         else:
-            interaction.response.send_message("You do not have permission to archive this channel", ephemeral=True)
+            await interaction.response.send_message("You do not have permission to archive this channel", ephemeral=True)
             return
 
 async def setup(bot: commands.Bot):

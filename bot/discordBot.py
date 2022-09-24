@@ -7,6 +7,10 @@ db_path = 'channels.db'
 conn = sqlite3.connect(db_path)
 c = conn.cursor()
 
+db_path2 = 'users.db'
+conn2 = sqlite3.connect(db_path2)
+c2 = conn2.cursor()
+
 class BoilerBot(commands.Bot):
     def __init__(self):
         super().__init__(
@@ -31,9 +35,19 @@ try:
     c.execute("""CREATE TABLE channels (
             name text,
             id integer,
-            usercount integer
+            usercount integer,
+            owner integer
             )""")
 
+except sqlite3.OperationalError:
+    pass
+
+try: 
+    c2.execute("""CREATE TABLE users (
+            id integer,
+            name text,
+            channel integer
+            )""")
 except sqlite3.OperationalError:
     pass
 

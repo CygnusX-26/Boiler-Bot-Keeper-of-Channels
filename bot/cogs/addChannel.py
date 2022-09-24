@@ -19,7 +19,13 @@ class addChannel(commands.Cog):
     
     @app_commands.command(name= 'createchannel', description = 'Creates a new channel')
     async def createChannel(self, interaction: discord.Interaction, name:str) -> None:
+        if (sql_methods.getUser(interaction.user.id) is None):
+            sql_methods.insertUser(interaction.user.id, interaction.user.name)
         if (sql_methods.getChannel(name) == None):
+            print(sql_methods.getUser(interaction.user.id)[2])
+            if (sql_methods.getUser(interaction.user.id)[2] > 4):
+                await interaction.response.send_message("No more than 5 channels!", ephemeral=True)
+                return
             guild = interaction.guild
             if (discord.utils.get(guild.categories, name = 'Channels') != None):
                 category = discord.utils.get(guild.categories, name = 'Channels')
@@ -27,7 +33,8 @@ class addChannel(commands.Cog):
                 category = await guild.create_category('Channels')
             await category.set_permissions(guild.default_role, view_channel=False)
             channel = await guild.create_text_channel(f'{name}', category=category)
-            sql_methods.insertChannel(name, channel.id, 0)
+            sql_methods.insertChannel(name, channel.id, 0, interaction.user.id)
+            sql_methods.updateUser(interaction.user.id, 1)
             await channel.set_permissions(guild.default_role, view_channel=False)
             await interaction.response.send_message(f'Channel {channel} created', ephemeral=True)
         else:
