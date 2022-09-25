@@ -22,12 +22,18 @@ def updateChannel(name:str, id:int, inc:int) -> None:
                 WHERE name = ? AND id = ?
                 """, (name, id))
 
+def updateGuildOwner(id: int, bool:int):
+    with conn:
+        c.execute(f"""UPDATE channels SET serverowner = {bool}
+                WHERE id = ?
+                """, (id, ))
+
 def getUserCount(id:int):
     c.execute(f"SELECT * FROM channels WHERE id = ?", (id,))
     return c.fetchone()[2]
 
 def getOwner(id:int) -> int:
-    c.execute(f"SELECT * FROM channels")
+    c.execute(f"SELECT * FROM channels WHERE id = ?", (id,))
     return c.fetchone()[3]
 
 def getAllChannels() -> list:
@@ -41,7 +47,7 @@ def removeChannel(id:int) -> None:
     
 def insertChannel(name:str, id:int, current:int, owner:int) -> None:
     with conn:
-        c.execute(f"INSERT INTO channels VALUES (?, ?, ?, ?)", (name, id, current, owner))
+        c.execute(f"INSERT INTO channels VALUES (?, ?, ?, ?, ?)", (name, id, current, owner, 0))
 
 def insertUser(id:int, name:str) -> None:
     with conn2:

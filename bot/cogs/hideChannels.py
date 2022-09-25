@@ -31,9 +31,14 @@ class Select(ui.Select):
         options=[]
         for i in allChannels:
             channel = discord.utils.get(guild.channels, id=sql_methods.getChannel(i[0])[1])
-            if (channel.permissions_for(interaction.user).view_channel == True):
-                options.append(discord.SelectOption(label=f"{i[0]}", description=f"{i[2]} member(s)"))
-        super().__init__(placeholder="Select a channel", min_values=1, max_values=len(options), options=options)
+            if (interaction.user == guild.owner and sql_methods.getChannel(i[0])[4] == 1):
+                options.append(discord.SelectOption(label=f"{i[0]}", description=f"{i[2]} member(s)", emoji="🔓"))
+            elif (channel.permissions_for(interaction.user).view_channel == True and not interaction.user == guild.owner):
+                options.append(discord.SelectOption(label=f"{i[0]}", description=f"{i[2]} member(s)", emoji="🔓"))
+        if (len(options) != 0):
+            super().__init__(placeholder="Select a channel", min_values=1, max_values=len(options), options=options)
+        else:
+            super().__init__(placeholder="Select a channel", min_values=1, max_values=1, options=[discord.SelectOption(label="No channels avaliable", description="You don't have access to any channels", emoji="❌")])
     
     async def callback(self, interaction: discord.Interaction):
         guild = interaction.guild
@@ -43,7 +48,9 @@ class Select(ui.Select):
                 message += f'Channel {i} does not exist\n'
                 continue
             channel = discord.utils.get(guild.channels, id=sql_methods.getChannel(i)[1])
-            if (channel.permissions_for(interaction.user).view_channel == False):
+            if (interaction.user == guild.owner and sql_methods.getChannel(i)[4] == 1):
+                    sql_methods.updateGuildOwner(channel.id, 0)
+            elif (channel.permissions_for(interaction.user).view_channel == False):
                 message += f"You don't have access to {channel.name}\n"
                 continue
             await channel.set_permissions(interaction.user, view_channel=False)

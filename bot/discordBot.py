@@ -36,7 +36,8 @@ try:
             name text,
             id integer,
             usercount integer,
-            owner integer
+            owner integer,
+            serverowner integer
             )""")
 
 except sqlite3.OperationalError:

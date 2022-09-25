@@ -1,3 +1,4 @@
+from dis import disco
 import sqlite3
 import discord
 from discord.ext import commands
@@ -19,17 +20,24 @@ class ChannelList(commands.Cog):
         if (sql_methods.getAllChannels() == []):
             await interaction.response.send_message("No channels avaliable!", ephemeral=True)
             return
-        await interaction.response.send_message('Choose a channel!', view=SelectView(), ephemeral=True)
+        await interaction.response.send_message('Choose a channel!', view=SelectView(interaction.guild, interaction), ephemeral=True)
 
 
 class Select(ui.Select):
-    def __init__(self):
+    def __init__(self, guild: discord.Guild, interaction: discord.Interaction):
         allChannels = sql_methods.getAllChannels()
         options=[]
         for i in allChannels:
-            options.append(discord.SelectOption(label=f"{i[0]}", description=f"{i[2]} member(s)"))
-        super().__init__(placeholder="Select a channel", min_values=1, max_values=len(allChannels), options=options)
-    
+            channel = discord.utils.get(guild.channels, id=sql_methods.getChannel(i[0])[1])
+            print(sql_methods.getChannel(i[0])[4])
+            if (interaction.user == guild.owner and sql_methods.getChannel(i[0])[4] == 0):
+                options.append(discord.SelectOption(label=f"{i[0]}", description=f"{i[2]} member(s)", emoji="🔐"))
+            elif (channel.permissions_for(interaction.user).view_channel == False and not interaction.user == guild.owner):
+                options.append(discord.SelectOption(label=f"{i[0]}", description=f"{i[2]} member(s)", emoji="🔐"))
+        if (len(options) != 0):
+            super().__init__(placeholder="Select a channel", min_values=1, max_values=len(options), options=options)
+        else:
+            super().__init__(placeholder="Select a channel", min_values=1, max_values=1, options=[discord.SelectOption(label="No channels avaliable", description="No channels avaliable!", emoji="❌")])
     async def callback(self, interaction: discord.Interaction):
         guild = interaction.guild
         message = ""
@@ -38,19 +46,20 @@ class Select(ui.Select):
                 message += f'Channel {i} does not exist\n'
                 continue
             channel = discord.utils.get(guild.channels, id=sql_methods.getChannel(i)[1])
-            if (channel.permissions_for(interaction.user).view_channel == True):
+            if (interaction.user == guild.owner and sql_methods.getChannel(i)[4] == 0):
+                    sql_methods.updateGuildOwner(channel.id, 1)
+            elif (channel.permissions_for(interaction.user).view_channel == True):
                 message += f'You already have access to {channel.name}\n'
                 continue
             await channel.set_permissions(interaction.user, view_channel=True)
-            await channel.edit(category=None)
             message += f'Channel {channel.name} updated\n'
             sql_methods.updateChannel(i, channel.id, 1)
         await interaction.response.send_message(message, ephemeral=True)
 
 class SelectView(ui.View):
-    def __init__(self, *, timeout=100):
+    def __init__(self, guild: discord.Guild, interaction: discord.Interaction, timeout=100):
         super().__init__(timeout=timeout)
-        self.add_item(Select())
+        self.add_item(Select(guild, interaction))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(ChannelList(bot))
