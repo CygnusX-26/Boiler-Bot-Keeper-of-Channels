@@ -29,7 +29,6 @@ class Select(ui.Select):
         options=[]
         for i in allChannels:
             channel = discord.utils.get(guild.channels, id=sql_methods.getChannel(i[0])[1])
-            print(sql_methods.getChannel(i[0])[4])
             if (interaction.user == guild.owner and sql_methods.getChannel(i[0])[4] == 0):
                 options.append(discord.SelectOption(label=f"{i[0]}", description=f"{i[2]} member(s)", emoji="🔐"))
             elif (channel.permissions_for(interaction.user).view_channel == False and not interaction.user == guild.owner):
