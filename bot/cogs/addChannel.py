@@ -24,7 +24,7 @@ class addChannel(commands.Cog):
         if (sql_methods.getChannel(name) == None):
             print(sql_methods.getUser(interaction.user.id)[2])
             if (sql_methods.getUser(interaction.user.id)[2] > 4):
-                await interaction.response.send_message("No more than 5 channels!", ephemeral=True)
+                await interaction.response.send_message("No more than 5 channels!", ephemeral=True) #users have a limit of 5 channels
                 return
             guild = interaction.guild
             if (discord.utils.get(guild.categories, name = 'Channels') != None):
@@ -36,9 +36,9 @@ class addChannel(commands.Cog):
             sql_methods.insertChannel(name, channel.id, 0, interaction.user.id)
             sql_methods.updateUser(interaction.user.id, 1)
             await channel.set_permissions(guild.default_role, view_channel=False)
-            await interaction.response.send_message(f'Channel {channel} created', ephemeral=True)
+            await interaction.response.send_message(f'Channel {channel} created', ephemeral=True) #when a new channel is created
         else:
-            await interaction.response.send_message(f'Channel {name} already exists', ephemeral=True)
+            await interaction.response.send_message(f'Channel {name} already exists', ephemeral=True) #when someone tries to create a duplicate channel
 
 
 async def setup(bot: commands.Bot):

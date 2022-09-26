@@ -3,6 +3,11 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
+# ------------------------------------------
+#|       DO NOT EDIT THIS FOR NOW!!!!!     |
+# ------------------------------------------
+
+
 
 class Bot(commands.Cog):
 

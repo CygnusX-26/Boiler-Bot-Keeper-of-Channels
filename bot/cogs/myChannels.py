@@ -11,7 +11,7 @@ class MyChannels(commands.Cog):
         self.bot = bot
             
 
-    #help command
+   #someone can make this embed better PLZ :sob:
     @app_commands.command(name= 'mychannels', description = 'Gets a list of your channels')
     async def myChannels(self, interaction: discord.Interaction) -> None:
         embed = discord.Embed(title = "Your Channels", color = 0x36393F)

@@ -19,7 +19,7 @@ class Channel(commands.Cog):
     @app_commands.command(name= 'hidechannels', description = 'hides a channel')
     async def hideChannels(self, interaction: discord.Interaction) -> None:
         if (sql_methods.getAllChannels() == []):
-            await interaction.response.send_message("No channels avaliable!", ephemeral=True)
+            await interaction.response.send_message("No channels avaliable!", ephemeral=True) #when there are no channels avaliable to make hidden
             return
         await interaction.response.send_message('Choose a channel!', view=SelectView(interaction.guild, interaction), ephemeral=True)
 
@@ -45,17 +45,17 @@ class Select(ui.Select):
         message = ""
         for i in self.values:
             if sql_methods.getChannel(i) is None:
-                message += f'Channel {i} does not exist\n'
+                message += f'Channel {i} does not exist\n' #when a channel doesn't exist (failsafe)
                 continue
             channel = discord.utils.get(guild.channels, id=sql_methods.getChannel(i)[1])
             if (interaction.user == guild.owner and sql_methods.getChannel(i)[4] == 1):
                     sql_methods.updateGuildOwner(channel.id, 0)
             elif (channel.permissions_for(interaction.user).view_channel == False):
-                message += f"You don't have access to {channel.name}\n"
+                message += f"You don't have access to {channel.name}\n" #when a user doesnt have access to a channel they want to hide (failsafe)
                 continue
             await channel.set_permissions(interaction.user, view_channel=False)
             await channel.edit(category=discord.utils.get(guild.categories, name="Channels"))
-            message += f'Channel {channel.name} updated\n'
+            message += f'Channel {channel.name} updated\n' # when channel permissions are successfully updated
             sql_methods.updateChannel(i, channel.id, -1)
         await interaction.response.send_message(message, ephemeral=True)
 
