@@ -1,5 +1,4 @@
-# Boiler Bot (name WIP lol)
-## WIP
+# Keeper of the Channels
 ---
 
 ## Setup
@@ -16,7 +15,7 @@ Then set the following environment variables
 
 > ```DISCORD_BOT_PREFIX``` - any prefix you like. (this is optional, but nice to have just in case app_commands arent working)
 
-## Pull Requests are welcome! Also pls help bugtest with permissions and stuff
+## Pull Requests are welcome! Also pls help bugtest
 
 thanks!!!
 # Discord
