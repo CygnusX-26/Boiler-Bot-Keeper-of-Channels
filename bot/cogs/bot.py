@@ -14,7 +14,7 @@ class Bot(commands.Cog):
     async def on_ready(self) -> None:
         await self.bot.change_presence(
             status=discord.Status.online,
-            activity=discord.Game(f"testing? testing? 123?"))
+            activity=discord.Game(f"Channelling your requests!"))
         print('This bot is online!')
             
 
